@@ -1,0 +1,42 @@
+[
+    {
+        "name": "For Loop",
+        "prefix": "for",
+        "body": "for item in iterable:\n    # TODO: Process item\n    pass"
+    },
+    {
+        "name": "While Loop",
+        "prefix": "while",
+        "body": "while condition:\n    # TODO: Process\n    pass"
+    },
+    {
+        "name": "If Statement",
+        "prefix": "if",
+        "body": "if condition:\n    # TODO: Process\n    pass\nelif another_condition:\n    # TODO: Process\n    pass\nelse:\n    # TODO: Process\n    pass"
+    },
+    {
+        "name": "Function Definition",
+        "prefix": "def",
+        "body": "def function_name(parameters):\n    \"\"\"Function docstring\"\"\"\n    # TODO: Implement function\n    return result"
+    },
+    {
+        "name": "Class Definition",
+        "prefix": "class",
+        "body": "class ClassName:\n    \"\"\"Class docstring\"\"\"\n    \n    def __init__(self, parameters):\n        self.parameters = parameters\n    \n    def method(self):\n        \"\"\"Method docstring\"\"\"\n        # TODO: Implement method\n        pass"
+    },
+    {
+        "name": "Try-Except Block",
+        "prefix": "try",
+        "body": "try:\n    # TODO: Risky operation\n    pass\nexcept Exception as e:\n    # TODO: Handle exception\n    print(f'Error: {e}')\nfinally:\n    # TODO: Cleanup\n    pass"
+    },
+    {
+        "name": "Import Statements",
+        "prefix": "import",
+        "body": "import os\nimport sys\nimport json\nfrom datetime import datetime"
+    },
+    {
+        "name": "Main Block",
+        "prefix": "main",
+        "body": "if __name__ == \"__main__\":\n    # TODO: Main execution\n    pass"
+    }
+]
