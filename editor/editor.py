@@ -100,7 +100,6 @@ class CodeEditor(QPlainTextEdit):
         self.blockCountChanged.connect(self.update_line_number_area_width)
         self.updateRequest.connect(self.update_line_number_area)
         self.cursorPositionChanged.connect(self.highlight_current_line)
-        self.cursorPositionChanged.connect(self.update_completion)
         
         # Set font
         font = QFontDatabase.systemFont(QFontDatabase.FixedFont)
@@ -118,77 +117,8 @@ class CodeEditor(QPlainTextEdit):
         
         # Update line number area width
         self.update_line_number_area_width(0)
-        
-        # Initialize code completion
-        self.init_completion()
     
-    def init_completion(self):
-        """Initialize code completion"""
-        # Python keywords and builtins
-        python_keywords = [
-            'and', 'as', 'assert', 'break', 'class', 'continue', 'def', 'del',
-            'elif', 'else', 'except', 'False', 'finally', 'for', 'from', 'global',
-            'if', 'import', 'in', 'is', 'lambda', 'None', 'nonlocal', 'not', 'or',
-            'pass', 'raise', 'return', 'True', 'try', 'while', 'with', 'yield'
-        ]
-        
-        python_builtins = [
-            'abs', 'all', 'any', 'ascii', 'bin', 'bool', 'breakpoint', 'bytearray',
-            'bytes', 'callable', 'chr', 'classmethod', 'compile', 'complex', 'delattr',
-            'dict', 'dir', 'divmod', 'enumerate', 'eval', 'exec', 'filter', 'float',
-            'format', 'frozenset', 'getattr', 'globals', 'hasattr', 'hash', 'help',
-            'hex', 'id', 'input', 'int', 'isinstance', 'issubclass', 'iter', 'len',
-            'list', 'locals', 'map', 'max', 'memoryview', 'min', 'next', 'object',
-            'oct', 'open', 'ord', 'pow', 'print', 'property', 'range', 'repr', 'reversed',
-            'round', 'set', 'setattr', 'slice', 'sorted', 'staticmethod', 'str', 'sum',
-            'super', 'tuple', 'type', 'vars', 'zip'
-        ]
-        
-        # Combine all completions
-        completions = python_keywords + python_builtins
-        
-        # Create completer
-        self.completer = QCompleter(completions, self)
-        self.completer.setCaseSensitivity(Qt.CaseInsensitive)
-        self.completer.setWidget(self)
-        self.completer.activated.connect(self.insert_completion)
-    
-    def update_completion(self):
-        """Update completion based on current cursor position"""
-        if self.completer.popup().isVisible():
-            return
-        
-        text = self.text_under_cursor()
-        if len(text) < 2:
-            return
-        
-        self.completer.setCompletionPrefix(text)
-        popup = self.completer.popup()
-        popup.setCurrentIndex(self.completer.completionModel().index(0, 0))
-        
-        # Position the popup
-        cr = self.cursorRect()
-        cr.setWidth(self.completer.popup().sizeHintForColumn(0) + 
-                   self.completer.popup().verticalScrollBar().sizeHint().width())
-        self.completer.complete(cr)
-    
-    def text_under_cursor(self):
-        """Get text under cursor for completion"""
-        cursor = self.textCursor()
-        cursor.select(cursor.WordUnderCursor)
-        return cursor.selectedText()
-    
-    def insert_completion(self, completion):
-        """Insert completion into editor"""
-        if self.completer.widget() != self:
-            return
-        
-        cursor = self.textCursor()
-        extra = len(completion) - len(self.completer.completionPrefix())
-        cursor.movePosition(cursor.Left)
-        cursor.movePosition(cursor.EndOfWord)
-        cursor.insertText(completion[-extra:])
-        self.setTextCursor(cursor)
+
     
     def line_number_area_width(self):
         """Calculate width of line number area"""

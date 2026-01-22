@@ -18,6 +18,8 @@ from ui.projectmanager import ProjectManager, ProjectFilesDialog
 from ui.debugger import DebuggerDialog
 from ui.gitintegration import GitManager, GitDialog, GitInitDialog
 from ui.snippets import SnippetManager, SnippetDialog
+from ui.search import FileSearchDialog
+from ui.statistics import CodeStatisticsDialog
 
 
 class MainWindow(QMainWindow):
@@ -165,6 +167,13 @@ class MainWindow(QMainWindow):
         insert_snippet_action.triggered.connect(self.insert_snippet)
         snippets_menu.addAction(insert_snippet_action)
         
+        edit_menu.addSeparator()
+        
+        search_action = QAction("Find in Files", self)
+        search_action.setShortcut("Ctrl+Shift+F")
+        search_action.triggered.connect(self.find_in_files)
+        edit_menu.addAction(search_action)
+        
         # Run menu
         run_menu = menu_bar.addMenu("Run")
         
@@ -233,6 +242,13 @@ class MainWindow(QMainWindow):
         toggle_terminal.setChecked(True)
         toggle_terminal.triggered.connect(self.toggle_terminal)
         view_menu.addAction(toggle_terminal)
+        
+        view_menu.addSeparator()
+        
+        statistics_action = QAction("Code Statistics", self)
+        statistics_action.setShortcut("Ctrl+Shift+I")
+        statistics_action.triggered.connect(self.show_code_statistics)
+        view_menu.addAction(statistics_action)
         
         # Theme submenu
         theme_menu = QMenu("Theme", self)
@@ -428,24 +444,23 @@ class MainWindow(QMainWindow):
                 if not editor:
                     return
                 
-                flags = 0
+                from PyQt5.QtGui import QTextDocument
+                flags = QTextDocument.FindFlags()
                 if not self.case_check.isChecked():
-                    flags |= Qt.CaseInsensitive
+                    flags |= QTextDocument.FindCaseSensitively
                 if self.whole_check.isChecked():
-                    flags |= Qt.MatchWholeWord
+                    flags |= QTextDocument.FindWholeWords
                 
-                cursor = editor.textCursor()
-                found = cursor.find(text, flags)
+                found = editor.find(text, flags)
                 
-                if found:
-                    editor.setTextCursor(cursor)
-                else:
+                if not found:
                     # Start from beginning
-                    cursor.movePosition(cursor.Start)
-                    found = cursor.find(text, flags)
-                    if found:
-                        editor.setTextCursor(cursor)
-                    else:
+                    from PyQt5.QtGui import QTextCursor
+                    cursor = editor.textCursor()
+                    cursor.movePosition(QTextCursor.Start)
+                    editor.setTextCursor(cursor)
+                    found = editor.find(text, flags)
+                    if not found:
                         QMessageBox.information(self, "Find", "Text not found")
         
         dialog = FindDialog(self)
@@ -827,3 +842,14 @@ class MainWindow(QMainWindow):
                     # Insert snippet into editor
                     editor.insertPlainText(snippet['body'])
                     break
+    
+    def find_in_files(self):
+        """Find text in files"""
+        dialog = FileSearchDialog(self)
+        dialog.exec_()
+    
+    def show_code_statistics(self):
+        """Show code statistics"""
+        current_file = self.current_file
+        dialog = CodeStatisticsDialog(current_file, self)
+        dialog.exec_()
